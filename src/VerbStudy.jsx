@@ -126,6 +126,7 @@ function CategoryDetail({ category, onBack, onConjugate, myVerbs, onPractice }) 
 
       <PracticeSetup
         title={category.name}
+        requireAccents={category.requireAccents}
         verbs={verbs}
         tenses={tenses}
         onTensesChange={setTenses}
@@ -138,7 +139,7 @@ function CategoryDetail({ category, onBack, onConjugate, myVerbs, onPractice }) 
   );
 }
 
-function PracticeSetup({ title, verbs, tenses, onTensesChange, onPractice }) {
+function PracticeSetup({ title, requireAccents = false, verbs, tenses, onTensesChange, onPractice }) {
   const toggle = (id) =>
     onTensesChange(tenses.includes(id) ? tenses.filter((x) => x !== id) : [...tenses, id]);
   const canStart = tenses.length > 0 && practicableCount(verbs, tenses);
@@ -149,6 +150,7 @@ function PracticeSetup({ title, verbs, tenses, onTensesChange, onPractice }) {
       <p className="muted">
         You'll see the English — like “you (tú) spoke” — and type the Spanish: <em>hablaste</em>.
       </p>
+      {requireAccents && <p className="muted">Accents always count in this category.</p>}
       <div className="chips" role="group" aria-label="Tenses to practice">
         {TENSES.map((t) => (
           <button
@@ -164,7 +166,7 @@ function PracticeSetup({ title, verbs, tenses, onTensesChange, onPractice }) {
       <button
         className="btn btn-correct"
         disabled={!canStart}
-        onClick={() => onPractice({ title, entries: verbs, tenses })}
+        onClick={() => onPractice({ title, entries: verbs, tenses, requireAccents })}
       >
         Start practice
       </button>

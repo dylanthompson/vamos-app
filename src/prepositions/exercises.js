@@ -2,6 +2,8 @@
 // Each item: { es: sentence with "___", en: translation, answers: [accepted…], why? }
 // The first answer is the one shown as correct. NONE means nothing goes in the
 // blank (only in exercises with `allowNone`).
+import { matchAnswer, normalize } from '../answers.js';
+
 export const NONE = '–';
 
 export const PREPOSITION_EXERCISES = [
@@ -157,18 +159,13 @@ export const PREPOSITION_EXERCISES = [
 
 // ---- Answer checking
 
-const normalize = (s) => s.toLowerCase().replace(/[¡!¿?.,;:]/g, '').replace(/\s+/g, ' ').trim();
-const loosen = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 const NONE_TYPED = ['–', '-', '—', 'nada', 'x', '0', 'ninguna', 'ninguno'];
 
-/** Returns { correct, accentSlip } for a typed answer. */
-export function checkPreposition(item, typed) {
+/** Check a typed answer (see matchAnswer for the result and `strictAccents`). */
+export function checkPreposition(item, typed, { strictAccents }) {
   let given = normalize(typed);
   if (NONE_TYPED.includes(given)) given = NONE;
-  const accepted = item.answers.map(normalize);
-  if (accepted.includes(given)) return { correct: true, accentSlip: false };
-  if (accepted.map(loosen).includes(loosen(given))) return { correct: true, accentSlip: true };
-  return { correct: false, accentSlip: false };
+  return matchAnswer([given], item.answers, { strictAccents });
 }
 
 /** The sentence with the blank filled in, split for highlighting: [before, answer, after]. */

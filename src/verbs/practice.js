@@ -1,5 +1,6 @@
 // Builds English → Spanish verb-practice cards and checks typed answers.
 import { conjugate } from '../conjugation/conjugate.js';
+import { matchAnswer, normalize } from '../answers.js';
 import { shuffle } from '../useDeck.js';
 import { englishPrompt, parseGloss } from './english.js';
 import { VERBS } from './verbBank.js';
@@ -108,10 +109,6 @@ export const practicableCount = (entries, tenses) =>
 
 // ---- Answer checking
 
-const normalize = (s) => s.toLowerCase().replace(/[¡!¿?.,;:]/g, '').replace(/\s+/g, ' ').trim();
-const loosen = (s) =>
-  s.normalize('NFD').replace(/[̀-ͯ]/g, ''); // drops accents, ñ→n, ü→u
-
 // Subject pronouns a learner may type before the verb, by table row
 const SUBJECT_PRONOUNS = [
   ['yo'],
@@ -130,21 +127,18 @@ function stripSubject(answer, card) {
 /**
  * Check a typed answer. A matching subject pronoun and the phrase's complement
  * are optional ("yo confío" and "confío en" are both fine; "yo confía" is not).
- * Returns { correct, accentSlip } — accentSlip: right apart from accents/ñ.
+ * Accents follow `strictAccents` (see matchAnswer). Either way, a missing
+ * accent that spells a different form of the verb is wrong (explico = "I
+ * explain", not explicó = "he explained"): { correct: false, otherForm: true }.
  */
-export function checkAnswer(card, typed) {
+export function checkAnswer(card, typed, { strictAccents }) {
   const given = stripSubject(normalize(typed), card);
-  const accepted = [card.answer, card.verbOnly, ...card.alsoAccepted].map(normalize);
-  if (accepted.includes(given)) return { correct: true, accentSlip: false };
-  if (accepted.map(loosen).includes(loosen(given))) {
-    // A missing accent is forgiven — unless it spells a different form of the
-    // verb (explico = "I explain", not explicó = "he explained").
-    if (allForms(card.entry).has(stripComplement(given, card))) {
-      return { correct: false, accentSlip: false, otherForm: true };
-    }
-    return { correct: true, accentSlip: true };
+  const accepted = [card.answer, card.verbOnly, ...card.alsoAccepted];
+  const result = matchAnswer([given], accepted, { strictAccents });
+  if ((result.accentSlip || result.accentMiss) && allForms(card.entry).has(stripComplement(given, card))) {
+    return { correct: false, otherForm: true };
   }
-  return { correct: false, accentSlip: false };
+  return result;
 }
 
 const stripComplement = (given, card) => {

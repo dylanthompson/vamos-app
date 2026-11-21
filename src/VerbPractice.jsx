@@ -4,6 +4,7 @@ import { buildPracticeCards, checkAnswer } from './verbs/practice.js';
 import { conjugate, TENSES } from './conjugation/conjugate.js';
 import ConjugationPanel from './ConjugationPanel.jsx';
 import AnswerForm from './AnswerForm.jsx';
+import { useSetting } from './settings.jsx';
 
 const tenseLabel = (id) => {
   const t = TENSES.find((x) => x.id === id);
@@ -17,7 +18,8 @@ export default function VerbPractice({ config, onComplete, onQuit }) {
   const card = deck.current;
 
   const [typed, setTyped] = useState('');
-  const [result, setResult] = useState(null); // { correct, accentSlip }
+  const [result, setResult] = useState(null); // see checkAnswer
+  const [strictAccents] = useSetting('strictAccents');
   const [showVerb, setShowVerb] = useState(false);
   const [conjOpen, setConjOpen] = useState(false);
   const [conjTense, setConjTense] = useState('presente');
@@ -40,7 +42,7 @@ export default function VerbPractice({ config, onComplete, onQuit }) {
   const submit = (e) => {
     e.preventDefault();
     if (result) next(result.correct);
-    else if (typed.trim()) setResult(checkAnswer(card, typed));
+    else if (typed.trim()) setResult(checkAnswer(card, typed, { strictAccents: strictAccents || !!config.requireAccents }));
   };
 
   const openConj = () => {
@@ -105,6 +107,7 @@ export default function VerbPractice({ config, onComplete, onQuit }) {
               <p>
                 <strong>✗ Not quite.</strong>
                 {result.otherForm && <> Without its accent, that's a different form of the verb.</>}
+                {result.accentMiss && <> Check your accents.</>}
                 {' '}The answer is <strong>{card.answer}</strong>
               </p>
             )}

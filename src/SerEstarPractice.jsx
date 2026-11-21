@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import useDeck from './useDeck.js';
 import AnswerForm from './AnswerForm.jsx';
+import Translation from './Translation.jsx';
+import { useSetting } from './settings.jsx';
 import { USES, checkSerEstar, fillBlank } from './serEstar/exercises.js';
 
 // Fill-in-the-blank ser/estar practice: read the sentence, type the conjugated verb.
@@ -9,7 +11,8 @@ export default function SerEstarPractice({ exercise, onComplete, onQuit }) {
   const item = deck.current;
 
   const [typed, setTyped] = useState('');
-  const [result, setResult] = useState(null); // { correct, accentSlip, rightVerb }
+  const [result, setResult] = useState(null); // see checkSerEstar
+  const [strictAccents] = useSetting('strictAccents');
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +29,7 @@ export default function SerEstarPractice({ exercise, onComplete, onQuit }) {
   const submit = (e) => {
     e.preventDefault();
     if (result) next(result.correct);
-    else if (typed.trim()) setResult(checkSerEstar(item, typed));
+    else if (typed.trim()) setResult(checkSerEstar(item, typed, { strictAccents }));
   };
 
   if (!item) return null;
@@ -66,7 +69,7 @@ export default function SerEstarPractice({ exercise, onComplete, onQuit }) {
             </>
           )}
         </span>
-        <span className="practice-note">{item.en}</span>
+        <Translation text={item.en} answered={!!result} />
 
         <AnswerForm
           inputRef={inputRef}
@@ -88,6 +91,7 @@ export default function SerEstarPractice({ exercise, onComplete, onQuit }) {
               <p>
                 <strong>✗ Not quite.</strong>
                 {result.rightVerb && <> Right verb ({use.verb}), wrong form.</>}
+                {result.accentMiss && <> Check your accents.</>}
                 {' '}The answer is <strong>{item.answers[0]}</strong>
               </p>
             )}

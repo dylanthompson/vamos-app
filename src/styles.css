@@ -517,6 +517,56 @@ h1 { margin: 0 0 8px; font-size: 2.2rem; text-align: center; }
 }
 .practice-prompt { font-size: 1.8rem; font-weight: 700; line-height: 1.25; }
 .practice-note { color: var(--muted); font-size: 0.9rem; }
+.translation { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
+
+/* Round icon button with a tooltip from data-tooltip (shown on hover / keyboard focus) */
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--chip-border);
+  border-radius: 50%;
+  background: var(--chip-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.icon-btn:hover,
+.icon-btn:focus-visible { color: var(--text); border-color: var(--accent); }
+.icon-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: opacity 0.15s;
+}
+.icon-btn[data-tooltip]:hover::after,
+.icon-btn[data-tooltip]:focus-visible::after { opacity: 1; }
+
+/* Settings */
+.settings-btn { position: fixed; top: 12px; right: 12px; z-index: 9; width: 40px; height: 40px; box-shadow: var(--shadow); }
+.settings-btn[data-tooltip]::after { left: auto; right: 0; transform: none; }
+.settings-panel { max-width: 440px; }
+.setting-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; cursor: pointer; }
+.setting-row input { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--accent); cursor: pointer; }
+.setting-name { display: block; font-weight: 700; }
+.setting-help { display: block; margin-top: 4px; color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
 .practice-frame {
   padding: 4px 12px;
   border-radius: 8px;
@@ -583,7 +633,7 @@ h1 { margin: 0 0 8px; font-size: 2.2rem; text-align: center; }
 /* Ser y estar */
 .se-rules {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -596,8 +646,22 @@ h1 { margin: 0 0 8px; font-size: 2.2rem; text-align: center; }
   text-align: left;
 }
 .se-rule-card h2 { margin: 0 0 8px; font-size: 1.1rem; }
-.se-rule-card ul { margin: 0; padding-left: 18px; font-size: 0.9rem; line-height: 1.45; }
-.se-rule-card li + li { margin-top: 4px; }
+.se-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; line-height: 1.4; }
+.se-table th,
+.se-table td { padding: 8px 6px; text-align: left; vertical-align: top; }
+.se-table thead th {
+  padding-top: 0;
+  border-bottom: 2px solid var(--chip-border);
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.se-table tbody tr + tr { border-top: 1px solid var(--chip-border); }
+.se-table tbody th { width: 58%; font-weight: normal; }
+.se-use { display: block; font-weight: 700; }
+.se-use-rule { display: block; color: var(--muted); font-size: 0.82rem; }
+.se-table td { font-style: italic; }
 .se-rule-card.se-ser { border-color: var(--accent); }
 .se-rule-card.se-estar { border-color: var(--correct); }
 .se-verb {
@@ -643,6 +707,7 @@ h1 { margin: 0 0 8px; font-size: 2.2rem; text-align: center; }
 
 @media (max-width: 560px) {
   .prep-sentence { font-size: 1.3rem; }
+  .app { padding-top: 60px; } /* room for the settings button */
   .top-nav { flex-wrap: wrap; justify-content: center; border-radius: 20px; }
   .top-nav-tab { padding: 8px 12px; font-size: 0.9rem; }
 }

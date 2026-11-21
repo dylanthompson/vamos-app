@@ -1,7 +1,7 @@
 import { SER_ESTAR_EXERCISES, USES, mixedExercise } from './serEstar/exercises.js';
 import { tagLabel } from './tags.js';
 
-const usesOf = (verb) => Object.values(USES).filter((u) => u.verb === verb && !u.label.startsWith('Meaning'));
+const usesOf = (verb) => Object.values(USES).filter((u) => u.verb === verb);
 
 // Ser vs estar: a cheat sheet of uses, then the exercises grouped by level
 export default function SerEstar({ onStart }) {
@@ -17,11 +17,25 @@ export default function SerEstar({ onStart }) {
         {['ser', 'estar'].map((verb) => (
           <section key={verb} className={`se-rule-card se-${verb}`}>
             <h2>{verb === 'ser' ? 'Ser — what it is' : 'Estar — how & where it is'}</h2>
-            <ul>
-              {usesOf(verb).map((u) => (
-                <li key={u.label}><strong>{u.label}:</strong> {u.rule}</li>
-              ))}
-            </ul>
+            <table className="se-table">
+              <thead>
+                <tr>
+                  <th scope="col">Use</th>
+                  <th scope="col">Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usesOf(verb).map((u) => (
+                  <tr key={u.label}>
+                    <th scope="row">
+                      <span className="se-use">{u.label}</span>
+                      <span className="se-use-rule">{u.rule}</span>
+                    </th>
+                    <td lang="es">{u.example}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
         ))}
       </div>

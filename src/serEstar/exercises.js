@@ -3,41 +3,48 @@
 // The first answer is the one shown as correct; `use` explains why (see USES).
 import { conjugate } from '../conjugation/conjugate.js';
 import { shuffle } from '../useDeck.js';
+import { loosen, matchAnswer, normalize } from '../answers.js';
 
 export const USES = {
   // Ser
-  description: { verb: 'ser', label: 'Description', rule: 'Traits that define someone or something: looks, personality, what it is like.' },
-  occupation: { verb: 'ser', label: 'Occupation', rule: 'Jobs and roles — what someone does for a living.' },
-  identity: { verb: 'ser', label: 'Identity & relationships', rule: 'Who or what someone is: names, relationships, nouns.' },
-  origin: { verb: 'ser', label: 'Origin', rule: 'Ser de: where someone or something is from.' },
-  material: { verb: 'ser', label: 'Material & possession', rule: 'Ser de: what it is made of, or whose it is.' },
-  time: { verb: 'ser', label: 'Time & dates', rule: 'Telling time, days, dates, and “it’s late / early”.' },
-  event: { verb: 'ser', label: 'Events', rule: 'Where or when an event takes place uses ser — even though it’s a location.' },
-  total: { verb: 'ser', label: 'Totals', rule: '¿Cuánto es? asks for the total amount to pay.' },
-  passive: { verb: 'ser', label: 'Passive voice', rule: 'Ser + participle describes an action done (by someone).' },
-  impersonal: { verb: 'ser', label: 'Impersonal expressions', rule: 'Es importante / necesario / mejor / posible…' },
-  purpose: { verb: 'ser', label: 'Ser para', rule: 'Ser para: who or what something is intended for.' },
-  meaningSer: { verb: 'ser', label: 'Meaning changes', rule: 'Some adjectives mean something different with ser.' },
+  description: { verb: 'ser', label: 'Description', rule: 'Traits that define someone or something: looks, personality, what it is like.', example: 'Mi hermano es alto.' },
+  occupation: { verb: 'ser', label: 'Occupation', rule: 'Jobs and roles — what someone does for a living.', example: 'Mi mamá es doctora.' },
+  identity: { verb: 'ser', label: 'Identity & relationships', rule: 'Who or what someone is: names, relationships, nouns.', example: 'Ella es mi prima.' },
+  origin: { verb: 'ser', label: 'Origin', rule: 'Ser de: where someone or something is from.', example: 'Somos de Oaxaca.' },
+  material: { verb: 'ser', label: 'Material & possession', rule: 'Ser de: what it is made of, or whose it is.', example: 'La mesa es de madera.' },
+  time: { verb: 'ser', label: 'Time & dates', rule: 'Telling time, days, dates, and “it’s late / early”.', example: 'Son las tres. Hoy es lunes.' },
+  event: { verb: 'ser', label: 'Events', rule: 'Where or when an event takes place uses ser — even though it’s a location.', example: 'La fiesta es en mi casa.' },
+  total: { verb: 'ser', label: 'Totals', rule: '¿Cuánto es? asks for the total amount to pay.', example: '¿Cuánto es todo?' },
+  passive: { verb: 'ser', label: 'Passive voice', rule: 'Ser + participle describes an action done (by someone).', example: 'El puente fue construido en 1950.' },
+  impersonal: { verb: 'ser', label: 'Impersonal expressions', rule: 'Es importante / necesario / mejor / posible…', example: 'Es importante llegar a tiempo.' },
+  purpose: { verb: 'ser', label: 'Ser para', rule: 'Ser para: who or what something is intended for.', example: 'Este regalo es para ti.' },
+  meaningSer: { verb: 'ser', label: 'Meaning changes', rule: 'Some adjectives mean something different with ser.', example: 'Es listo. (He’s clever.)' },
 
   // Estar
-  location: { verb: 'estar', label: 'Location', rule: 'Where a person, place, or thing is.' },
-  condition: { verb: 'estar', label: 'Condition', rule: 'Physical states and health — how someone or something is right now.' },
-  emotion: { verb: 'estar', label: 'Emotion', rule: 'How someone feels.' },
-  progressive: { verb: 'estar', label: 'Progressive', rule: 'Estar + -ando / -iendo: an action in progress.' },
-  result: { verb: 'estar', label: 'Result of an action', rule: 'Estar + participle: the state left after something happened.' },
-  death: { verb: 'estar', label: 'Death', rule: 'Estar muerto — death is treated as a resulting state, even though it’s permanent.' },
-  temporaryRole: { verb: 'estar', label: 'Estar de', rule: 'Estar de + job/activity: a temporary role or situation (de mesero, de vacaciones).' },
-  dateEstar: { verb: 'estar', label: 'Estamos a / en', rule: 'Estamos a + date, estamos en + season or month: where we are in the calendar.' },
-  price: { verb: 'estar', label: 'Changing prices', rule: '¿A cuánto está? asks for a price that changes (per kilo, today’s rate).' },
-  appearance: { verb: 'estar', label: 'Looks / tastes', rule: 'How someone looks or something tastes right now, or a change you notice.' },
-  expression: { verb: 'estar', label: 'Set expressions', rule: 'Fixed phrases: estar bien, estar de acuerdo, estar por (about to).' },
-  weather: { verb: 'estar', label: 'Weather', rule: 'Estar nublado / despejado — the state of the sky right now.' },
-  meaningEstar: { verb: 'estar', label: 'Meaning changes', rule: 'Some adjectives mean something different with estar.' },
+  location: { verb: 'estar', label: 'Location', rule: 'Where a person, place, or thing is.', example: 'El libro está en la mesa.' },
+  condition: { verb: 'estar', label: 'Condition', rule: 'Physical states and health — how someone or something is right now.', example: 'Estoy cansado.' },
+  emotion: { verb: 'estar', label: 'Emotion', rule: 'How someone feels.', example: 'Ella está nerviosa.' },
+  progressive: { verb: 'estar', label: 'Progressive', rule: 'Estar + -ando / -iendo: an action in progress.', example: 'Estamos estudiando.' },
+  result: { verb: 'estar', label: 'Result of an action', rule: 'Estar + participle: the state left after something happened.', example: 'La ventana está abierta.' },
+  death: { verb: 'estar', label: 'Death', rule: 'Estar muerto — death is treated as a resulting state, even though it’s permanent.', example: 'Mi bisabuelo está muerto.' },
+  temporaryRole: { verb: 'estar', label: 'Estar de', rule: 'Estar de + job/activity: a temporary role or situation (de mesero, de vacaciones).', example: 'Está de mesero este verano.' },
+  dateEstar: { verb: 'estar', label: 'Estamos a / en', rule: 'Estamos a + date, estamos en + season or month: where we are in the calendar.', example: 'Estamos en otoño.' },
+  price: { verb: 'estar', label: 'Changing prices', rule: '¿A cuánto está? asks for a price that changes (per kilo, today’s rate).', example: '¿A cuánto está el kilo?' },
+  appearance: { verb: 'estar', label: 'Looks / tastes', rule: 'How someone looks or something tastes right now, or a change you notice.', example: '¡Qué alto estás!' },
+  expression: { verb: 'estar', label: 'Set expressions', rule: 'Fixed phrases: estar bien, estar de acuerdo, estar por (about to).', example: 'Estoy de acuerdo.' },
+  weather: { verb: 'estar', label: 'Weather', rule: 'Estar nublado / despejado — the state of the sky right now.', example: 'Hoy está nublado.' },
+  meaningEstar: { verb: 'estar', label: 'Meaning changes', rule: 'Some adjectives mean something different with estar.', example: 'Está listo. (He’s ready.)' },
 };
 
 const item = (es, en, answers, use, note) => ({
   es, en, answers: Array.isArray(answers) ? answers : [answers], use, note,
 });
+
+// The ser and estar sentences for one meaning-changing adjective: [es, en, answer] each
+const meaningPair = (note, [serEs, serEn, serAnswer], [estarEs, estarEn, estarAnswer]) => [
+  item(serEs, serEn, serAnswer, 'meaningSer', note),
+  item(estarEs, estarEn, estarAnswer, 'meaningEstar', note),
+];
 
 export const SER_ESTAR_EXERCISES = [
   {
@@ -100,31 +107,53 @@ export const SER_ESTAR_EXERCISES = [
     name: 'Adjectives that change meaning',
     emoji: '🎭',
     level: 2,
-    description: 'Listo, aburrido, rico, malo, verde, vivo, seguro… mean different things with ser and estar.',
+    description: 'Listo, aburrido, rico, malo, verde, vivo, seguro… mean different things with ser and estar. The second half of each sentence tells you which.',
+    // Every sentence has two parts: the blank, then a clue showing whether the
+    // adjective is a trait (ser) or a state (estar).
     items: [
-      item('Mi prima ___ muy lista; siempre saca diez.', 'My cousin is very clever; she always gets top grades.', 'es', 'meaningSer', 'ser listo = clever · estar listo = ready'),
-      item('¿Ya ___ listos? Nos vamos.', 'Are you all ready? We’re leaving.', 'están', 'meaningEstar', 'ser listo = clever · estar listo = ready'),
-      item('Esta película ___ aburrida.', 'This movie is boring.', 'es', 'meaningSer', 'ser aburrido = boring · estar aburrido = bored'),
-      item('Yo ___ aburrido; no hay nada que hacer.', "I'm bored; there's nothing to do.", 'estoy', 'meaningEstar', 'ser aburrido = boring · estar aburrido = bored'),
-      item('Ese señor ___ muy rico; tiene tres casas.', 'That man is very rich; he has three houses.', 'es', 'meaningSer', 'ser rico = rich · estar rico = delicious'),
-      item('¡Los tacos ___ muy ricos!', 'The tacos are delicious!', 'están', 'meaningEstar', 'ser rico = rich · estar rico = delicious'),
-      item('Los plátanos todavía ___ verdes.', 'The bananas are still unripe.', 'están', 'meaningEstar', 'ser verde = green (color) · estar verde = unripe, or inexperienced'),
-      item('Mi carro ___ verde.', 'My car is green.', 'es', 'meaningSer', 'ser verde = green (color) · estar verde = unripe, or inexperienced'),
-      item('Mi abuelo ___ malo; tiene gripa.', 'My grandfather is sick; he has the flu.', 'está', 'meaningEstar', 'ser malo = bad, mean · estar malo = sick (or spoiled)'),
-      item('Ese perro ___ malo; muerde a todos.', 'That dog is mean; it bites everyone.', 'es', 'meaningSer', 'ser malo = bad, mean · estar malo = sick (or spoiled)'),
-      item('Mi maestra ___ muy buena; siempre nos ayuda.', 'My teacher is very good; she always helps us.', 'es', 'meaningSer', 'ser bueno = good, kind · estar bueno = tastes good (and, colloquially, attractive)'),
-      item('¡Este pastel ___ buenísimo!', 'This cake tastes amazing!', 'está', 'meaningEstar', 'ser bueno = good, kind · estar bueno = tastes good (and, colloquially, attractive)'),
-      item('El pez todavía ___ vivo.', 'The fish is still alive.', 'está', 'meaningEstar', 'ser vivo = sharp, quick-witted · estar vivo = alive'),
-      item('Ese niño ___ muy vivo; nadie lo engaña.', 'That kid is very sharp; nobody fools him.', 'es', 'meaningSer', 'ser vivo = sharp, quick-witted · estar vivo = alive'),
-      item('Mi papá ___ seguro de que va a llover.', 'My dad is sure it’s going to rain.', 'está', 'meaningEstar', 'ser seguro = safe · estar seguro = sure'),
-      item('Este barrio ___ muy seguro.', 'This neighborhood is very safe.', 'es', 'meaningSer', 'ser seguro = safe · estar seguro = sure'),
-      item('Mi hermano ___ muy callado; casi nunca habla.', 'My brother is very quiet; he almost never talks.', 'es', 'meaningSer', 'ser callado = a quiet person · estar callado = silent right now'),
-      item('¿Por qué ___ tan callada hoy?', 'Why are you so quiet today?', 'estás', 'meaningEstar', 'ser callado = a quiet person · estar callado = silent right now'),
-      item('Él ___ muy orgulloso; nunca pide perdón.', "He's very proud; he never apologizes.", 'es', 'meaningSer', 'ser orgulloso = arrogant, proud (trait) · estar orgulloso de = proud of'),
-      item('Ella ___ orgullosa de su hijo.', 'She is proud of her son.', 'está', 'meaningEstar', 'ser orgulloso = arrogant, proud (trait) · estar orgulloso de = proud of'),
-      item('¿___ despierta? Ya son las siete.', 'Are you awake? It’s already seven.', 'estás', 'meaningEstar', 'ser despierto = bright, alert · estar despierto = awake'),
-      item('Este trabajo ___ muy cansado.', 'This job is very tiring.', 'es', 'meaningSer', 'ser cansado = tiring · estar cansado = tired'),
-    ],
+      meaningPair('ser listo = clever · estar listo = ready',
+        ['Mi prima ___ muy lista; siempre saca diez en matemáticas.', 'My cousin is very clever; she always gets top marks in math.', 'es'],
+        ['Los niños ya ___ listos; tienen los zapatos puestos y la mochila en la mano.', 'The kids are ready now; they have their shoes on and their backpacks in hand.', 'están']),
+      meaningPair('ser aburrido = boring · estar aburrido = bored',
+        ['Esta película ___ muy aburrida; nunca pasa nada interesante.', 'This movie is really boring; nothing interesting ever happens.', 'es'],
+        ['Yo ___ muy aburrido; no hay nada que hacer en esta casa.', "I'm really bored; there's nothing to do in this house.", 'estoy']),
+      meaningPair('ser rico = rich · estar rico = delicious',
+        ['Ese señor ___ muy rico; tiene tres casas y un yate.', 'That man is very rich; he has three houses and a yacht.', 'es'],
+        ['Los tacos ___ muy ricos; ¿me das otro?', 'The tacos are delicious; can I have another one?', 'están']),
+      meaningPair('ser verde = green (color) · estar verde = unripe, or inexperienced',
+        ['Mi carro ___ verde, del mismo color que la bandera.', 'My car is green, the same color as the flag.', 'es'],
+        ['Los plátanos todavía ___ verdes; hay que esperar unos días para comerlos.', 'The bananas are still unripe; we have to wait a few days to eat them.', 'están']),
+      meaningPair('ser malo = bad, mean · estar malo = sick (or spoiled)',
+        ['Ese perro ___ malo; muerde a todos los que pasan.', 'That dog is mean; it bites everyone who walks by.', 'es'],
+        ['Mi abuelo ___ malo; tiene gripa y no se levanta de la cama.', "My grandfather is sick; he has the flu and won't get out of bed.", 'está']),
+      meaningPair('ser bueno = good, kind · estar bueno = tastes good (and, colloquially, attractive)',
+        ['Mi maestra ___ muy buena; siempre nos ayuda cuando no entendemos.', "My teacher is very good; she always helps us when we don't understand.", 'es'],
+        ['Este pastel ___ buenísimo; sabe a chocolate y canela.', 'This cake tastes amazing; it tastes like chocolate and cinnamon.', 'está']),
+      meaningPair('ser vivo = sharp, quick-witted · estar vivo = alive',
+        ['Ese niño ___ muy vivo; nadie lo puede engañar.', 'That kid is very sharp; nobody can fool him.', 'es'],
+        ['El pez todavía ___ vivo; se está moviendo en la bolsa.', "The fish is still alive; it's moving in the bag.", 'está']),
+      meaningPair('ser seguro = safe · estar seguro = sure',
+        ['Este barrio ___ muy seguro; casi nunca hay robos.', 'This neighborhood is very safe; there are hardly ever any robberies.', 'es'],
+        ['Mi papá ___ seguro de que va a llover; vio el pronóstico esta mañana.', "My dad is sure it's going to rain; he saw the forecast this morning.", 'está']),
+      meaningPair('ser callado = a quiet person · estar callado = silent right now',
+        ['Mi hermano ___ muy callado; casi nunca habla con nadie.', 'My brother is very quiet; he hardly ever talks to anyone.', 'es'],
+        ['Hoy ___ muy callada; ¿te pasa algo?', "You're very quiet today; is something wrong?", 'estás']),
+      meaningPair('ser orgulloso = arrogant, proud (trait) · estar orgulloso de = proud of',
+        ['Él ___ muy orgulloso; nunca pide perdón.', "He's very proud; he never apologizes.", 'es'],
+        ['Ella ___ muy orgullosa de su hijo; hoy se graduó de la universidad.', "She's very proud of her son; he graduated from college today.", 'está']),
+      meaningPair('ser despierto = bright, alert · estar despierto = awake',
+        ['Mi hija ___ muy despierta; aprende todo rapidísimo.', 'My daughter is very bright; she learns everything really fast.', 'es'],
+        ['¿Todavía ___ despierta? Ya son las dos de la mañana.', "Are you still awake? It's already two in the morning.", 'estás']),
+      meaningPair('ser cansado = tiring · estar cansado = tired',
+        ['Este trabajo ___ muy cansado; cargo cajas todo el día.', 'This job is really tiring; I carry boxes all day.', 'es'],
+        ['Yo ___ muy cansado; anoche dormí solo tres horas.', 'I’m really tired; I only slept three hours last night.', 'estoy']),
+      meaningPair('ser atento = thoughtful, courteous · estar atento = paying attention',
+        ['Mi vecino ___ muy atento; siempre me trae algo cuando estoy enfermo.', "My neighbor is very thoughtful; he always brings me something when I'm sick.", 'es'],
+        ['Hoy los alumnos ___ muy atentos; mañana es el examen.', 'Today the students are paying close attention; the test is tomorrow.', 'están']),
+      meaningPair('ser interesado = self-serving · estar interesado = interested',
+        ['Mi primo ___ muy interesado; solo te llama cuando necesita dinero.', 'My cousin is very self-serving; he only calls you when he needs money.', 'es'],
+        ['Mi primo ___ muy interesado en el puesto; ya mandó su currículum.', "My cousin is very interested in the job; he's already sent his résumé.", 'está']),
+    ].flat(),
   },
   {
     id: 'tricky',
@@ -196,9 +225,6 @@ export function mixedExercise(size = 25) {
 
 // ---- Answer checking
 
-const normalize = (s) => s.toLowerCase().replace(/[¡!¿?.,;:]/g, '').replace(/\s+/g, ' ').trim();
-const loosen = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
-
 const formsOf = (inf) => {
   const conj = conjugate(inf, false);
   return new Set([inf, ...Object.values(conj.tenses).flat()].map(normalize));
@@ -206,20 +232,17 @@ const formsOf = (inf) => {
 const FORMS = { ser: formsOf('ser'), estar: formsOf('estar') };
 
 /**
- * Returns { correct, accentSlip, rightVerb } for a typed answer. A leading
- * subject pronoun is ignored. rightVerb: wrong, but a form of the right verb.
+ * Check a typed answer (see matchAnswer for the result and `strictAccents`).
+ * A leading subject pronoun is ignored. Also sets rightVerb: wrong, but a
+ * form of the right verb.
  */
-export function checkSerEstar(item, typed) {
+export function checkSerEstar(item, typed, { strictAccents }) {
   const words = normalize(typed).split(' ');
   const given = words.length > 1 ? words.slice(1).join(' ') : words[0];
-  const accepted = item.answers.map(normalize);
-  for (const g of new Set([normalize(typed), given])) {
-    if (accepted.includes(g)) return { correct: true, accentSlip: false };
-    if (accepted.map(loosen).includes(loosen(g))) return { correct: true, accentSlip: true };
-  }
+  const result = matchAnswer([normalize(typed), given], item.answers, { strictAccents });
+  if (result.correct || result.accentMiss) return result;
   const forms = FORMS[USES[item.use].verb];
-  const rightVerb = [...forms].some((f) => loosen(f) === loosen(given));
-  return { correct: false, accentSlip: false, rightVerb };
+  return { ...result, rightVerb: [...forms].some((f) => loosen(f) === loosen(given)) };
 }
 
 /** The sentence with the blank filled in, split for highlighting: [before, answer, after]. */

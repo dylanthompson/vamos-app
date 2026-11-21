@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import SettingsDialog from './SettingsDialog.jsx';
+import { GearIcon } from './icons.jsx';
 import Menu from './Menu.jsx';
 import FlashcardSession from './FlashcardSession.jsx';
 import VerbStudy from './VerbStudy.jsx';
@@ -28,6 +30,8 @@ export default function App() {
   // These live here (not in the pages) so they survive a study session
   const [filters, setFilters] = useState({});
   const [verbView, setVerbView] = useState({ tab: 'categories', categoryId: null });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
 
   const startSet = (set) => {
     setWordSet(set);
@@ -46,6 +50,15 @@ export default function App() {
 
   return (
     <div className="app">
+      <button
+        className="icon-btn settings-btn"
+        aria-label="Settings"
+        data-tooltip="Settings"
+        onClick={() => setSettingsOpen(true)}
+      >
+        <GearIcon />
+      </button>
+      {settingsOpen && <SettingsDialog onClose={closeSettings} />}
       {TABS.some((t) => t.screen === screen) && (
         <nav className="top-nav" aria-label="Sections">
           {TABS.map((t) => (

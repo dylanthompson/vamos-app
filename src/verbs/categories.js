@@ -1,6 +1,7 @@
 // Verb study categories. Each verb bank entry is tested against every category,
 // so a verb can belong to several (tener: -er, e→ie, yo-go, preterite, future).
 // `tenses` are the tenses selected by default when practicing the category.
+// `requireAccents` makes practice check accents even with strict accent mode off.
 
 // Pronominal verbs: the pronoun is part of the verb or changes its meaning
 // (irse = to leave, quejarse = to complain). Other "-se" verbs are reflexive:
@@ -140,6 +141,7 @@ export const CATEGORIES = [
     rule: 'Write an accent on the stressed í or ú in the present — except nosotros.',
     example: 'confiar → confío, confías · graduarse → me gradúo',
     tenses: ['presente', 'subjPresente'],
+    requireAccents: true, // the accents are the lesson: always checked
     test: (e) => ['í', 'ú'].includes(e.traits.stemChange),
   },
 
@@ -163,6 +165,7 @@ export const CATEGORIES = [
     rule: 'Special stems with the endings -e, -iste, -o, -imos, -ieron — and no accents.',
     example: 'tener → tuve · poder → pude · querer → quise · decir → dije',
     tenses: ['preterito', 'subjImperfecto'],
+    requireAccents: true, // "no accents" is part of the lesson: always checked
     test: (e) => e.traits.strongPreterite,
   },
   {

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import useDeck from './useDeck.js';
 import AnswerForm from './AnswerForm.jsx';
+import Translation from './Translation.jsx';
+import { useSetting } from './settings.jsx';
 import { NONE, checkPreposition, fillBlank } from './prepositions/exercises.js';
 
 // Fill-in-the-blank preposition practice: read the sentence, type the missing word.
@@ -9,7 +11,8 @@ export default function PrepositionPractice({ exercise, onComplete, onQuit }) {
   const item = deck.current;
 
   const [typed, setTyped] = useState('');
-  const [result, setResult] = useState(null); // { correct, accentSlip }
+  const [result, setResult] = useState(null); // see checkPreposition
+  const [strictAccents] = useSetting('strictAccents');
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +29,7 @@ export default function PrepositionPractice({ exercise, onComplete, onQuit }) {
   const submit = (e) => {
     e.preventDefault();
     if (result) next(result.correct);
-    else if (typed.trim()) setResult(checkPreposition(item, typed));
+    else if (typed.trim()) setResult(checkPreposition(item, typed, { strictAccents }));
   };
 
   if (!item) return null;
@@ -66,7 +69,7 @@ export default function PrepositionPractice({ exercise, onComplete, onQuit }) {
             </>
           )}
         </span>
-        <span className="practice-note">{item.en}</span>
+        <Translation text={item.en} answered={!!result} />
         {exercise.allowNone && !result && (
           <span className="practice-note">If nothing goes in the blank, type – (or “nada”).</span>
         )}
@@ -90,7 +93,8 @@ export default function PrepositionPractice({ exercise, onComplete, onQuit }) {
               </p>
             ) : (
               <p>
-                <strong>✗ Not quite.</strong> The answer is <strong>{answerText(item.answers[0])}</strong>
+                <strong>✗ Not quite.</strong>
+                {result.accentMiss && <> Check your accents.</>} The answer is <strong>{answerText(item.answers[0])}</strong>
               </p>
             )}
             {others.length > 0 && (
